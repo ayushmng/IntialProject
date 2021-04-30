@@ -7,8 +7,6 @@ import {
   View,
   Image,
   FlatList,
-  SafeAreaView,
-  ScrollView,
   ToastAndroid,
 } from 'react-native';
 import {Card, FAB} from 'react-native-paper';
@@ -60,12 +58,12 @@ export const Home = () => {
     },
   ];
 
-  const renderList = (item) => {
+  const renderList = ({id, name, age, position, imageLink}) => {
     return (
       <Card
         style={styles.cardContainer}
         onPress={() => {
-          ToastAndroid.show('My id is: ' + item.id, ToastAndroid.SHORT);
+          ToastAndroid.show('My id is: ' + id, ToastAndroid.SHORT);
         }}>
         <View style={styles.cardTextStyle}>
           <Image
@@ -77,56 +75,59 @@ export const Home = () => {
               padding: 12,
             }}
             source={{
-              uri: item.imageLink,
+              uri: imageLink,
             }}
           />
           <View style={styles.textViewStyle}>
-            <Text style={styles.textInsideView}>Name: {item.name}</Text>
-            <Text style={styles.textInsideView}>Age: {item.age}</Text>
-            <Text style={styles.textInsideView}>Position: {item.position}</Text>
+            <Text style={styles.textInsideView}>Name: {name}</Text>
+            <Text style={styles.textInsideView}>Age: {age}</Text>
+            <Text style={styles.textInsideView}>Position: {position}</Text>
           </View>
         </View>
         <View>
           <Text style={{fontSize: 20, marginTop: 8, marginLeft: 8}}>
-            Hello Card {item.id}
+            Hello Card {id}
           </Text>
         </View>
       </Card>
     );
   };
 
+  const footerButton = () => {
+    return (
+      <View style={styles.buttonContainer}>
+        <Button
+          onPress={() => navigation.navigate('ButtonComponent')}
+          title="Go Next"
+        />
+      </View>
+    );
+  };
+
   return (
     <View>
-      <ScrollView>
-        <SafeAreaView style={{flex: 1}}>
-          <FlatList
-            data={data} //takes array as 1st parameter if flatlist have to be customized
-            renderItem={({item}) => {
-              // console.log(item);
-              return renderList(item); // 2nd argument as function so above we convert item as fun
-            }}
-            // providing key/id to array
-            keyExtractor={(item) => `${item.id}`}
-          />
-          <View style={styles.buttonContainer}>
-            <Button
-              onPress={() => navigation.navigate('ButtonComponent')}
-              title="Go Next ->"
-            />
-          </View>
-        </SafeAreaView>
-      </ScrollView>
+      <FlatList
+        data={data} //takes array as 1st parameter if flatList have to be customized
+        renderItem={({item}) => {
+          // console.log(item);
+          return renderList(item); // 2nd argument as function so above we convert item as fun
+        }}
+        // providing key/id to array
+        keyExtractor={({id}) => `${id}`}
+        ListFooterComponent={footerButton}
+      />
       <FAB
         style={styles.fab}
-        default
+        small={false}
         icon="plus"
-        onPress={() => console.log('Pressed')}
+        theme={{colors: {accent: '#d91862'}}}
+        onPress={() => navigation.navigate('CreateEmployee')}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   cardContainer: {
     margin: 8,
     padding: 8,
@@ -136,11 +137,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 48,
     padding: 8,
     fontSize: 18,
     color: '#fff',
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
+    // alignSelf: 'flex-end',
     marginBottom: 20,
     marginRight: 8,
   },

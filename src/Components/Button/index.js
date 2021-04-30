@@ -1,16 +1,7 @@
 import React, {useState} from 'react';
-import {
-  Platform,
-  StyleSheet,
-  Button,
-  Text,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, Button, Text, View, TouchableOpacity} from 'react-native';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-// import { createAppContainer } from "react-navigation";
-import {Home} from '../../Screen/Home';
 
 export const ButtonComponent = ({navigation}) => {
   const [click, setClick] = useState(0);
@@ -54,18 +45,6 @@ export const ButtonComponent = ({navigation}) => {
     </View>
   );
 };
-
-function HomeScreen({navigation}) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Details')}
-      />
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

@@ -1,7 +1,5 @@
-// import {NavigationContainer} from '@react-navigation/native';
-
 import React from 'react';
-// import {ButtonComponent} from './src/Components/Button';
+// import {ButtonComponent from './src/Components/Button';
 import {NavigationContainer} from '@react-navigation/native';
 import {AppNavigation} from './src/Navigation/AppNavigation';
 
