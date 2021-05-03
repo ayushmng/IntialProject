@@ -10,83 +10,91 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {Card, FAB} from 'react-native-paper';
+import {Profile} from './Profile';
 // import Toast from 'react-native-toast-message';
 
 export const Home = () => {
   const navigation = useNavigation();
-  const rad = 80;
-
   const data = [
     {
       id: 1,
-      name: 'Employee 1',
-      age: '21',
-      position: 'ReactNative Developer',
+      name: 'Shobita Neupane',
+      email: 'shobita001@gmail.com',
+      contact: '981234567',
+      position: 'Content Writer',
+      salary: '24',
       imageLink: 'https://static.toiimg.com/photo/67538607.cms',
     },
     {
       id: 2,
-      name: 'Employee 2',
-      age: '22',
-      position: 'Android Developer',
+      name: 'Ayush Katuwal',
+      email: 'ayushmng.21@gmail.com',
+      contact: '987654321',
+      position: 'ReactNative Developer',
+      salary: '72',
       imageLink:
         'https://www.incimages.com/uploaded_files/image/1920x1080/getty_481292845_77896.jpg',
     },
     {
       id: 3,
-      name: 'Employee 3',
-      age: '23',
-      position: 'IOS Developer',
+      name: 'Anil Ghimire',
+      email: 'anilghimire@gmail.com',
+      contact: '982345671',
+      position: 'Flutter Developer',
+      salary: '48',
       imageLink:
         'https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80',
     },
     {
       id: 4,
-      name: 'Employee 4',
-      age: '24',
+      name: 'Shova Sapkota',
+      email: 'shova001@gmail.com',
+      contact: '980765432',
       position: 'FrontEnd Developer',
+      salary: '12',
       imageLink:
         'https://miro.medium.com/max/875/1*PgIo7r6qQXem8BmWd-vksQ.jpeg',
     },
     {
       id: 5,
-      name: 'Employee 5',
-      age: '25',
+      name: 'Ashreeya Katuwal',
+      email: 'ashreeyakatuwal156@gmail.com',
+      contact: '980123456',
       position: 'BackEnd Developer',
+      salary: '48',
       imageLink:
         'https://img.freepik.com/free-photo/cheerful-curly-business-girl-wearing-glasses_176420-206.jpg?size=626&ext=jpg',
     },
   ];
 
-  const renderList = ({id, name, age, position, imageLink}) => {
+  const renderList = (item) => {
     return (
       <Card
-        style={styles.cardContainer}
+        style={homeStyles.cardContainer}
         onPress={() => {
-          ToastAndroid.show('My id is: ' + id, ToastAndroid.SHORT);
+          navigation.navigate('Profile', {item});
+          ToastAndroid.show('My id is: ' + item.id, ToastAndroid.SHORT);
         }}>
-        <View style={styles.cardTextStyle}>
+        <View style={homeStyles.cardTextStyle}>
           <Image
-            style={{
-              width: rad,
-              height: rad,
-              borderRadius: rad / 2,
-              margin: 4,
-              padding: 12,
-            }}
+            style={homeStyles.imageStyle}
             source={{
-              uri: imageLink,
+              uri: item.imageLink,
             }}
           />
-          <View style={styles.textViewStyle}>
-            <Text style={styles.textInsideView}>Name: {name}</Text>
-            <Text style={styles.textInsideView}>Age: {age}</Text>
-            <Text style={styles.textInsideView}>Position: {position}</Text>
+          <View style={homeStyles.textViewStyle}>
+            <Text style={homeStyles.textInsideView}>Email: {item.email}</Text>
+            <Text style={homeStyles.textInsideView}>
+              Contact No.: {item.contact}
+            </Text>
+            <Text style={homeStyles.textInsideView}>
+              Position: {item.position}
+            </Text>
           </View>
         </View>
         <View>
-          <Text style={{fontSize: 20, marginTop: 8, marginLeft: 8}}>
-            Hello Card {id}
+          <Text style={{fontSize: 16, marginTop: 8, marginLeft: 8}}>
+            {item.name}
           </Text>
         </View>
       </Card>
@@ -95,7 +103,7 @@ export const Home = () => {
 
   const footerButton = () => {
     return (
-      <View style={styles.buttonContainer}>
+      <View style={homeStyles.buttonContainer}>
         <Button
           onPress={() => navigation.navigate('ButtonComponent')}
           title="Go Next"
@@ -113,21 +121,23 @@ export const Home = () => {
           return renderList(item); // 2nd argument as function so above we convert item as fun
         }}
         // providing key/id to array
-        keyExtractor={({id}) => `${id}`}
+        keyExtractor={({id}) => `${id}`} //converts int to string -> `${string}`
         ListFooterComponent={footerButton}
       />
       <FAB
-        style={styles.fab}
+        style={homeStyles.fab}
         small={false}
         icon="plus"
         theme={{colors: {accent: '#d91862'}}}
-        onPress={() => navigation.navigate('CreateEmployee')}
+        onPress={() => navigation.navigate('Add Employee')}
       />
     </View>
   );
 };
 
-export const styles = StyleSheet.create({
+const rad = 80;
+
+export const homeStyles = StyleSheet.create({
   cardContainer: {
     margin: 8,
     padding: 8,
@@ -149,6 +159,13 @@ export const styles = StyleSheet.create({
   textViewStyle: {
     marginLeft: 8,
     padding: 6,
+  },
+  imageStyle: {
+    width: rad,
+    height: rad,
+    borderRadius: rad / 2,
+    margin: 4,
+    padding: 12,
   },
   textInsideView: {
     marginTop: 4,

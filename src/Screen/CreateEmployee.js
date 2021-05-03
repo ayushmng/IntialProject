@@ -1,13 +1,19 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, Modal} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
-import {styles} from './Home';
+import {useNavigation} from '@react-navigation/native';
+import {homeStyles} from './Home';
+import {Profile} from './Profile';
 
 export const CreateEmployee = () => {
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
+  const [contact, setContact] = useState('');
   const [position, setPosition] = useState('');
+  const [email, setEmail] = useState('');
+  const [salary, setSalary] = useState('');
   const [modal, setModal] = useState(false);
+
+  const navigation = useNavigation();
 
   return (
     <View style={CEStyles.root}>
@@ -20,11 +26,19 @@ export const CreateEmployee = () => {
       />
       <TextInput
         style={CEStyles.inputStyle}
-        label="Age"
+        label="Email id"
         mode="outlined"
-        value={age}
+        value={email}
+        keyboardType="email-address"
+        onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        style={CEStyles.inputStyle}
+        label="Contact No."
+        mode="outlined"
+        value={contact}
         keyboardType="number-pad"
-        onChangeText={(text) => setAge(text)}
+        onChangeText={(text) => setContact(text)}
       />
       <TextInput
         style={CEStyles.inputStyle}
@@ -33,9 +47,21 @@ export const CreateEmployee = () => {
         value={position}
         onChangeText={(text) => setPosition(text)}
       />
+      <TextInput
+        style={CEStyles.inputStyle}
+        label="Average Salary"
+        mode="outlined"
+        value={salary}
+        keyboardType="number-pad"
+        onChangeText={(text) => setSalary(text)}
+      />
 
-      <View style={styles.buttonContainer}>
-        <Button mode="contained" icon="upload" onPress={() => setModal(true)}>
+      <View style={homeStyles.buttonContainer}>
+        <Button
+          mode="contained"
+          icon="upload"
+          color="#0a70c9"
+          onPress={() => setModal(true)}>
           Upload
         </Button>
         <Modal
@@ -48,18 +74,22 @@ export const CreateEmployee = () => {
               <Button
                 mode="contained"
                 icon="camera"
+                color="#0a70c9"
                 onPress={() => setModal(false)}>
                 Camera
               </Button>
               <Button
                 mode="contained"
                 icon="image-area"
+                color="#0a70c9"
                 onPress={() => setModal(false)}>
                 Gallery
               </Button>
             </View>
             <View style={{margin: 8}}>
-              <Button onPress={() => setModal(false)}>Cancel</Button>
+              <Button color="#0a70c9" onPress={() => setModal(false)}>
+                Cancel
+              </Button>
             </View>
           </View>
         </Modal>
@@ -68,7 +98,7 @@ export const CreateEmployee = () => {
   );
 };
 
-const CEStyles = StyleSheet.create({
+export const CEStyles = StyleSheet.create({
   root: {
     flex: 1,
   },
