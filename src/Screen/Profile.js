@@ -29,14 +29,14 @@ export const Profile = (props) => {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={profileStyles.root}>
       <LinearGradient
         colors={['#0a70c9', '#4ed4f2']}
-        style={styles.linearGradient}
+        style={profileStyles.linearGradient}
       />
-      <View style={styles.alignCenter}>
+      <View style={profileStyles.alignCenter}>
         <Image
-          style={styles.imageStyle}
+          style={profileStyles.imageStyle}
           source={{
             uri: imageLink,
           }}
@@ -47,29 +47,29 @@ export const Profile = (props) => {
         <Title style={{fontSize: 16}}>{position}</Title>
       </View>
       <Card style={homeStyles.cardContainer}>
-        <View style={styles.cardContainer}>
+        <View style={profileStyles.cardContainer}>
           <MaterialIcons name="email" size={32} color="#0a70c9" />
           <Text
-            style={styles.textStyle}
+            style={profileStyles.textStyle}
             onPress={() => {
               Linking.openURL('mailto:' + email);
             }}>
             {email}
           </Text>
         </View>
-        <View style={styles.cardContainer}>
+        <View style={profileStyles.cardContainer}>
           <MaterialIcons name="call" size={32} color="#0a70c9" />
           <Text
-            style={styles.textStyle}
+            style={profileStyles.textStyle}
             onPress={() => {
               openDial();
             }}>
             {contact}
           </Text>
         </View>
-        <View style={styles.cardContainer}>
+        <View style={profileStyles.cardContainer}>
           <MaterialIcons name="attach-money" size={32} color="#0a70c9" />
-          <Text style={styles.textStyle}> {salary} LPA </Text>
+          <Text style={profileStyles.textStyle}> {salary} LPA </Text>
         </View>
       </Card>
 
@@ -97,7 +97,7 @@ export const Profile = (props) => {
 
 const rad = 150;
 
-const styles = StyleSheet.create({
+export const profileStyles = StyleSheet.create({
   alignCenter: {
     alignSelf: 'center',
   },
