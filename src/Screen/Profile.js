@@ -1,24 +1,62 @@
 import React from 'react';
-import {Text, Image, View, StyleSheet, Linking, Platform} from 'react-native';
+import {
+  Text,
+  Image,
+  View,
+  StyleSheet,
+  Linking,
+  Platform,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import {Card, Title, Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {homeStyles} from './Home';
+import {Home} from './Home';
+import {CreateEmployee} from './CreateEmployee';
 import {CEStyles} from './CreateEmployee';
+import color from 'color';
 
 export const Profile = (props) => {
   const navigation = useNavigation();
 
+  let baseUrl = 'http://192.168.0.105:3000';
+
+  console.log(`${baseUrl}/delete`);
+
   const {
-    id,
+    _id,
     name,
     email,
     contact,
     position,
     salary,
-    imageLink,
+    picture,
   } = props.route.params.item;
+
+  const deleteEmployee = () => {
+    fetch(`${baseUrl}/delete`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({_id}),
+    })
+      .then((res) => res.json())
+      .then((deleteEmp) => {
+        navigation.navigate('Dashboard');
+        ToastAndroid.show(
+          `${deleteEmp.name} deleted successfully`,
+          ToastAndroid.SHORT,
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        Alert.alert('Something went wrong !!' + `${err}`);
+      });
+  };
 
   const openDial = () => {
     if (Platform.OS === 'android') {
@@ -38,7 +76,7 @@ export const Profile = (props) => {
         <Image
           style={profileStyles.imageStyle}
           source={{
-            uri: imageLink,
+            uri: picture,
           }}
         />
       </View>
@@ -78,16 +116,24 @@ export const Profile = (props) => {
           mode="contained"
           icon="account-edit"
           color="#0a70c9"
-          // onPress={() => setModal(false)}
-        >
+          onPress={() =>
+            navigation.navigate('Add Employee', {
+              _id,
+              name,
+              email,
+              contact,
+              position,
+              salary,
+              picture,
+            })
+          }>
           Edit
         </Button>
         <Button
           mode="contained"
           icon="delete"
           color="#0a70c9"
-          // onPress={() => setModal(false)}
-        >
+          onPress={() => deleteEmployee()}>
           Fire Employee
         </Button>
       </View>

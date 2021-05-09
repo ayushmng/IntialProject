@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Button,
@@ -8,6 +8,8 @@ import {
   Image,
   FlatList,
   ToastAndroid,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {Card, FAB} from 'react-native-paper';
 import {Profile} from './Profile';
@@ -15,57 +17,79 @@ import {Profile} from './Profile';
 
 export const Home = () => {
   const navigation = useNavigation();
-  const data = [
-    {
-      id: 1,
-      name: 'Shobita Neupane',
-      email: 'shobita001@gmail.com',
-      contact: '981234567',
-      position: 'Content Writer',
-      salary: '24',
-      imageLink: 'https://static.toiimg.com/photo/67538607.cms',
-    },
-    {
-      id: 2,
-      name: 'Ayush Katuwal',
-      email: 'ayushmng.21@gmail.com',
-      contact: '987654321',
-      position: 'ReactNative Developer',
-      salary: '72',
-      imageLink:
-        'https://www.incimages.com/uploaded_files/image/1920x1080/getty_481292845_77896.jpg',
-    },
-    {
-      id: 3,
-      name: 'Anil Ghimire',
-      email: 'anilghimire@gmail.com',
-      contact: '982345671',
-      position: 'Flutter Developer',
-      salary: '48',
-      imageLink:
-        'https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80',
-    },
-    {
-      id: 4,
-      name: 'Shova Sapkota',
-      email: 'shova001@gmail.com',
-      contact: '980765432',
-      position: 'FrontEnd Developer',
-      salary: '12',
-      imageLink:
-        'https://miro.medium.com/max/875/1*PgIo7r6qQXem8BmWd-vksQ.jpeg',
-    },
-    {
-      id: 5,
-      name: 'Ashreeya Katuwal',
-      email: 'ashreeyakatuwal156@gmail.com',
-      contact: '980123456',
-      position: 'BackEnd Developer',
-      salary: '48',
-      imageLink:
-        'https://img.freepik.com/free-photo/cheerful-curly-business-girl-wearing-glasses_176420-206.jpg?size=626&ext=jpg',
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  let baseUrl = 'http://192.168.0.105:3000/';
+
+  const fetchData = () => {
+    fetch(baseUrl)
+      // fetch('http://10.0.2.2:3000/')
+      .then((res) => res.json())
+      .then((results) => {
+        console.log(results);
+        setData(results);
+        setLoading(false);
+      })
+      .catch(() => {
+        Alert.alert('Something went wrong !!');
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  // const data = [
+  //   {
+  //     _id: 1,
+  //     name: 'Shobita Neupane',
+  //     email: 'shobita001@gmail.com',
+  //     contact: '981234567',
+  //     position: 'Content Writer',
+  //     salary: '24',
+  //     imageLink: 'https://static.toiimg.com/photo/67538607.cms',
+  //   },
+  //   {
+  //     _id: 2,
+  //     name: 'Ayush Katuwal',
+  //     email: 'ayushmng.21@gmail.com',
+  //     contact: '987654321',
+  //     position: 'ReactNative Developer',
+  //     salary: '72',
+  //     imageLink:
+  //       'https://www.incimages.com/uploaded_files/image/1920x1080/getty_481292845_77896.jpg',
+  //   },
+  //   {
+  //     _id: 3,
+  //     name: 'Anil Ghimire',
+  //     email: 'anilghimire@gmail.com',
+  //     contact: '982345671',
+  //     position: 'Flutter Developer',
+  //     salary: '48',
+  //     imageLink:
+  //       'https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80',
+  //   },
+  //   {
+  //     _id: 4,
+  //     name: 'Shova Sapkota',
+  //     email: 'shova001@gmail.com',
+  //     contact: '980765432',
+  //     position: 'FrontEnd Developer',
+  //     salary: '12',
+  //     imageLink:
+  //       'https://miro.medium.com/max/875/1*PgIo7r6qQXem8BmWd-vksQ.jpeg',
+  //   },
+  //   {
+  //     _id: 5,
+  //     name: 'Ashreeya Katuwal',
+  //     email: 'ashreeyakatuwal156@gmail.com',
+  //     contact: '980123456',
+  //     position: 'BackEnd Developer',
+  //     salary: '48',
+  //     imageLink:
+  //       'https://img.freepik.com/free-photo/cheerful-curly-business-girl-wearing-glasses_176420-206.jpg?size=626&ext=jpg',
+  //   },
+  // ];
 
   const renderList = (item) => {
     return (
@@ -73,13 +97,12 @@ export const Home = () => {
         style={homeStyles.cardContainer}
         onPress={() => {
           navigation.navigate('Profile', {item});
-          ToastAndroid.show('My id is: ' + item.id, ToastAndroid.SHORT);
         }}>
         <View style={homeStyles.cardTextStyle}>
           <Image
             style={homeStyles.imageStyle}
             source={{
-              uri: item.imageLink,
+              uri: item.picture,
             }}
           />
           <View style={homeStyles.textViewStyle}>
@@ -113,17 +136,31 @@ export const Home = () => {
   };
 
   return (
-    <View>
-      <FlatList
-        data={data} //takes array as 1st parameter if flatList have to be customized
-        renderItem={({item}) => {
-          // console.log(item);
-          return renderList(item); // 2nd argument as function so above we convert item as fun
-        }}
-        // providing key/id to array
-        keyExtractor={({id}) => `${id}`} //converts int to string -> `${string}`
-        ListFooterComponent={footerButton}
-      />
+    <View style={{flex: 1}}>
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color="#000ff"
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            color: '#000ff',
+          }}
+        />
+      ) : (
+        <FlatList
+          data={data} //takes array as 1st parameter if flatList have to be customized
+          renderItem={({item}) => {
+            return renderList(item); // 2nd argument as function so above we convert item as fun
+          }}
+          // providing key/id to array
+          keyExtractor={({_id}) => `${_id}`} //converts int to string -> `${string}`
+          ListFooterComponent={footerButton}
+          onRefresh={() => fetchData()}
+          refreshing={loading}
+        />
+      )}
+
       <FAB
         style={homeStyles.fab}
         small={false}

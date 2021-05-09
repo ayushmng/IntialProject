@@ -1,5 +1,13 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Modal, Alert, Image} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Modal,
+  Alert,
+  Image,
+  ToastAndroid,
+  KeyboardAvoidingView,
+} from 'react-native';
 import {TextInput, Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,20 +23,59 @@ import {
   checkMultiple,
 } from 'react-native-permissions';
 import {Profile} from './Profile';
+import {Home} from './Home';
 import {cos} from 'react-native-reanimated';
 import {ScrollView} from 'react-native-gesture-handler';
 
-export const CreateEmployee = () => {
-  const [name, setName] = useState('');
-  const [contact, setContact] = useState('');
-  const [position, setPosition] = useState('');
-  const [email, setEmail] = useState('');
-  const [salary, setSalary] = useState('');
-  const [picture, setPicture] = useState('');
+export const CreateEmployee = ({navigate, route}) => {
+  const getEmployeeDetails = (type) => {
+    if (route.params) {
+      switch (type) {
+        case 'name':
+          return route.params.name;
+        case 'email':
+          return route.params.email;
+        case 'contact':
+          return route.params.contact;
+        case 'position':
+          return route.params.position;
+        case 'salary':
+          return route.params.salary;
+        case 'picture':
+          return route.params.picture;
+      }
+    }
+    return '';
+  };
+
+  const [name, setName] = useState(getEmployeeDetails('name'));
+  const [contact, setContact] = useState(getEmployeeDetails('contact'));
+  const [position, setPosition] = useState(getEmployeeDetails('position'));
+  const [email, setEmail] = useState(getEmployeeDetails('email'));
+  const [salary, setSalary] = useState(getEmployeeDetails('salary'));
+  const [picture, setPicture] = useState(getEmployeeDetails('picture'));
   const [modal, setModal] = useState(false);
+  const [shiftKeyboard, setShiftKeyboard] = useState(false);
 
   const navigation = useNavigation();
   const [filePath, setFilePath] = useState({});
+
+  let baseUrl = 'http://192.168.0.105:3000'; // 10.0.2.2
+
+  let imageUrl;
+  if (picture === '') {
+    if (filePath.url === '') {
+      imageUrl = filePath.url;
+    } else {
+      imageUrl =
+        'https://res.cloudinary.com/react-native-test-image-api/image/upload/v1620551537/dummy_profile_o9vmcm.jpg';
+    }
+  } else {
+    imageUrl = picture;
+    console.log('else cond');
+  }
+
+  console.log(`Current ImageUrl: ${imageUrl}`);
 
   const uploadImage = (image) => {
     const data = new FormData();
@@ -48,6 +95,70 @@ export const CreateEmployee = () => {
         console.log(data);
         setPicture(data.url);
         setModal(false);
+      })
+      .catch(() => {
+        Alert.alert('Something went wrong !!');
+      });
+  };
+
+  const updateDetails = () => {
+    let id = route.params._id;
+    fetch(`${baseUrl}/update`, {
+      // fetch('http://10.0.2.2:3000/update', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id,
+        name,
+        contact,
+        position,
+        email,
+        salary,
+        picture,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        navigation.navigate('Dashboard');
+        ToastAndroid.show(
+          `${data.name} updated successfully`,
+          ToastAndroid.SHORT,
+        );
+      })
+      .catch(() => {
+        Alert.alert('Something went wrong !!');
+      });
+  };
+
+  const sendData = () => {
+    fetch(`${baseUrl}/send-data`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        contact,
+        position,
+        email,
+        salary,
+        picture,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        navigation.navigate('Dashboard');
+        ToastAndroid.show(
+          `${data.name} saved successfully`,
+          ToastAndroid.SHORT,
+        );
+      })
+      .catch(() => {
+        Alert.alert('Something went wrong !!');
       });
   };
 
@@ -172,7 +283,9 @@ export const CreateEmployee = () => {
           console.log('type -> ', response.type);
           console.log('fileName -> ', response.fileName);
           setFilePath(response);
+
           const imageFormat = response.uri.split('.')[2];
+
           console.log('ImageFormat:->', imageFormat);
           if (!response.didCancel) {
             let newFile = {
@@ -191,103 +304,137 @@ export const CreateEmployee = () => {
   };
 
   return (
-    <View style={CEStyles.root}>
-      <LinearGradient colors={['#0a70c9', '#4ed4f2']} style={{height: '12%'}} />
-      <View style={profileStyles.alignCenter}>
-        <Image
-          style={profileStyles.imageStyle}
-          source={{
-            uri: filePath.uri,
-            // uri:
-            //   'https://www.incimages.com/uploaded_files/image/1920x1080/getty_481292845_77896.jpg',
-          }}
+    // <ScrollView style={{flex: 1}}>
+    // <KeyboardAvoidingView
+    //   behavior="position"
+    //   enabled={shiftKeyboard}
+    //   style={CEStyles.root}>
+    <ScrollView>
+      <View style={CEStyles.root}>
+        <LinearGradient
+          colors={['#0a70c9', '#4ed4f2']}
+          style={{height: '12%'}}
         />
-      </View>
-      <TextInput
-        style={CEStyles.inputStyle}
-        label="Name"
-        mode="outlined"
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        style={CEStyles.inputStyle}
-        label="Email id"
-        mode="outlined"
-        value={email}
-        keyboardType="email-address"
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={CEStyles.inputStyle}
-        label="Contact No."
-        mode="outlined"
-        value={contact}
-        keyboardType="number-pad"
-        onChangeText={(text) => setContact(text)}
-      />
-      <TextInput
-        style={CEStyles.inputStyle}
-        label="Position"
-        mode="outlined"
-        value={position}
-        onChangeText={(text) => setPosition(text)}
-      />
-      <TextInput
-        style={CEStyles.inputStyle}
-        label="Average Salary"
-        mode="outlined"
-        value={salary}
-        keyboardType="number-pad"
-        onChangeText={(text) => setSalary(text)}
-      />
-
-      <View style={{...homeStyles.buttonContainer, marginTop: 10}}>
+        <View style={profileStyles.alignCenter}>
+          <Image
+            style={profileStyles.imageStyle}
+            source={{
+              uri: imageUrl,
+            }}
+          />
+        </View>
         <Button
-          mode="contained"
+          mode="text"
           icon={picture === '' ? 'upload' : 'check'}
           color="#0a70c9"
+          style={{alignSelf: 'center'}}
           onPress={() => setModal(true)}>
-          Upload
+          Upload Image
         </Button>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modal}
-          onRequestClose={() => setModal(false)}>
-          <View style={CEStyles.modalView}>
-            <View style={CEStyles.modalButtonView}>
-              <Button
-                mode="contained"
-                icon="camera"
-                color="#0a70c9"
-                onPress={() => {
-                  pickFromCamera('photo');
-                  setModal(false);
-                }}>
-                Camera
-              </Button>
-              <Button
-                mode="contained"
-                icon="image-area"
-                color="#0a70c9"
-                onPress={() => {
-                  pickFromGallery();
-                  console.log(PERMISSIONS);
-                  setModal(false);
-                }}>
-                Gallery
-              </Button>
+        <TextInput
+          style={CEStyles.inputStyle}
+          label="Name"
+          mode="outlined"
+          value={name}
+          onChangeText={(text) => setName(text)}
+        />
+        <TextInput
+          style={CEStyles.inputStyle}
+          label="Email id"
+          mode="outlined"
+          value={email}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          style={CEStyles.inputStyle}
+          label="Contact No."
+          mode="outlined"
+          onFocus={() => setShiftKeyboard(true)}
+          value={contact}
+          keyboardType="number-pad"
+          onChangeText={(text) => setContact(text)}
+        />
+        <TextInput
+          style={CEStyles.inputStyle}
+          label="Position"
+          mode="outlined"
+          onFocus={() => setShiftKeyboard(true)}
+          value={position}
+          onChangeText={(text) => setPosition(text)}
+        />
+        <TextInput
+          style={CEStyles.inputStyle}
+          label="Average Salary"
+          mode="outlined"
+          onFocus={() => setShiftKeyboard(true)}
+          value={salary}
+          keyboardType="number-pad"
+          onChangeText={(text) => setSalary(text)}
+        />
+
+        <View style={{...homeStyles.buttonContainer, marginTop: 10}}>
+          {route.params ? (
+            <Button
+              mode="contained"
+              icon={'content-save'}
+              color="#0a70c9"
+              onPress={() => updateDetails()}>
+              Update Profile
+            </Button>
+          ) : (
+            <Button
+              mode="contained"
+              icon={'content-save'}
+              color="#0a70c9"
+              onPress={() => sendData()}>
+              Save Profile
+            </Button>
+          )}
+        </View>
+
+        <View style={{...homeStyles.buttonContainer, marginTop: 24}}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modal}
+            onRequestClose={() => setModal(false)}>
+            <View style={CEStyles.modalView}>
+              <View style={CEStyles.modalButtonView}>
+                <Button
+                  mode="contained"
+                  icon="camera"
+                  color="#0a70c9"
+                  onPress={() => {
+                    pickFromCamera('photo');
+                    setModal(false);
+                  }}>
+                  Camera
+                </Button>
+                <Button
+                  mode="contained"
+                  icon="image-area"
+                  color="#0a70c9"
+                  onPress={() => {
+                    pickFromGallery();
+                    console.log(PERMISSIONS);
+                    setModal(false);
+                  }}>
+                  Gallery
+                </Button>
+              </View>
+              <View style={{margin: 8}}>
+                <Button color="#0a70c9" onPress={() => setModal(false)}>
+                  Cancel
+                </Button>
+              </View>
             </View>
-            <View style={{margin: 8}}>
-              <Button color="#0a70c9" onPress={() => setModal(false)}>
-                Cancel
-              </Button>
-            </View>
-          </View>
-        </Modal>
+          </Modal>
+        </View>
       </View>
-    </View>
+    </ScrollView>
+    // </KeyboardAvoidingView>
   );
 };
 
@@ -309,6 +456,6 @@ export const CEStyles = StyleSheet.create({
   modalButtonView: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: 10,
+    padding: 8,
   },
 });
